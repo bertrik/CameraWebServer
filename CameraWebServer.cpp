@@ -1,5 +1,8 @@
 #include "esp_camera.h"
 #include <WiFi.h>
+#include "soc/soc.h"
+#include "soc/rtc_cntl_reg.h"
+
 
 //
 // WARNING!!! Make sure that you have either selected ESP32 Wrover Module,
@@ -79,6 +82,8 @@ const char* password = "";
 void startCameraServer();
 
 void setup() {
+  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
+
   Serial.begin(115200);
   Serial.setDebugOutput(true);
   Serial.println();

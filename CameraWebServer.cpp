@@ -12,7 +12,7 @@
 // Select camera model
 //#define CAMERA_MODEL_WROVER_KIT
 //#define CAMERA_MODEL_M5STACK_PSRAM
-#define CAMERA_MODEL_AI_THINKER
+//#define CAMERA_MODEL_AI_THINKER
 
 const char *ssid = "revspace-pub-2.4ghz";
 const char *password = "";

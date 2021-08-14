@@ -2,6 +2,9 @@
 #include <WiFi.h>
 #include "soc/soc.h"
 #include "soc/rtc_cntl_reg.h"
+#include <SPIFFS.h>
+#include <WiFiSettings.h>
+#include <esp_wifi.h>
 
 
 //
@@ -13,9 +16,6 @@
 //#define CAMERA_MODEL_WROVER_KIT
 //#define CAMERA_MODEL_M5STACK_PSRAM
 //#define CAMERA_MODEL_AI_THINKER
-
-const char *ssid = "revspace-pub-2.4ghz";
-const char *password = "";
 
 
 #if defined(CAMERA_MODEL_WROVER_KIT)
@@ -83,11 +83,25 @@ void startCameraServer();
 
 void setup()
 {
-    WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
-
     Serial.begin(115200);
     Serial.setDebugOutput(true);
     Serial.println();
+
+    SPIFFS.begin(true);
+
+    WiFi.begin("ESP32-CAM");
+
+    esp_wifi_set_ps(WIFI_PS_NONE);  // supposedly reduce latency
+
+    WiFiSettings.hostname = "ESP32-CAM";
+
+    WiFiSettings.connect();
+
+    Serial.println(F("wifi setup"));
+
+    WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
+
+    Serial.println(F("RTC_CNTL_BROWN_OUT_REG"));
 
     camera_config_t config;
     config.ledc_channel = LEDC_CHANNEL_0;
@@ -130,15 +144,6 @@ void setup()
     //drop down frame size for higher initial frame rate
     sensor_t *s = esp_camera_sensor_get();
     s->set_framesize(s, FRAMESIZE_QVGA);
-
-    WiFi.begin(ssid, password);
-
-    while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
-        Serial.print(".");
-    }
-    Serial.println("");
-    Serial.println("WiFi connected");
 
     startCameraServer();
 
